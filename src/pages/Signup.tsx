@@ -1,13 +1,22 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 
 export function Signup() {
+  const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleSignup = async (e: FormEvent) => {
     e.preventDefault();
@@ -16,15 +25,25 @@ export function Signup() {
     setMessage(null);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
       });
 
       if (error) throw error;
-      setMessage('Account created successfully! Please check your email to verify your account.');
+
+      // If session exists, user is logged in immediately (email verification disabled)
+      if (data.session) {
+        navigate('/');
+      } else {
+        setMessage('Account created successfully! Please check your email to verify your account.');
+      }
     } catch (err: any) {
-      setError(err.message);
+      if (err.message.includes('already registered')) {
+        setError('This email is already registered. Please sign in instead.');
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }

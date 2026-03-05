@@ -1,13 +1,21 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../context/AuthContext';
 
 export function Login() {
+  const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -23,7 +31,13 @@ export function Login() {
       if (error) throw error;
       navigate('/');
     } catch (err: any) {
-      setError(err.message);
+      if (err.message.includes('Email not confirmed')) {
+        setError('Please verify your email address. If you haven\'t received an email, check your spam folder or contact support.');
+      } else if (err.message.includes('Invalid login credentials')) {
+        setError('Invalid email or password. Please try again.');
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
