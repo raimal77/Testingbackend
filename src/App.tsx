@@ -12,6 +12,8 @@ import { Checkout } from './pages/Checkout';
 import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
 import { Forum } from './pages/Forum';
+import { ForgotPassword } from './pages/ForgotPassword';
+import { UpdatePassword } from './pages/UpdatePassword';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -41,6 +43,8 @@ export default function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/forum" element={<Forum />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/update-password" element={<UpdatePassword />} />
               </Routes>
             </main>
             <Footer />

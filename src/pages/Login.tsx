@@ -93,6 +93,14 @@ export function Login() {
             </div>
           </div>
 
+          <div className="flex items-center justify-end">
+            <div className="text-sm">
+              <Link to="/forgot-password" className="font-medium text-black hover:underline">
+                Forgot your password?
+              </Link>
+            </div>
+          </div>
+
           {error && (
             <div className="text-sm text-red-600 text-center">
               {error}
